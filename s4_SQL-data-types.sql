@@ -107,15 +107,55 @@ AND st_intersects(parcels.geometry, floodarea.geometry)
 
 --# Date & Time Operations
 
-SELECT date_part('day', gps_date)
+SELECT gps_date FROM trees
+
+--
+
+SELECT date_part('day', gps_date)  FROM trees           -- (opposite order of arg's gives error)
+
+--
+
+SELECT gps_date, to_char(gps_date, 'DAY') FROM trees    -- (opposite order of arg's gives error)
+
+--
 
 SELECT * FROM trees WHERE gps_date > '6/03/2001'
 
-SELECT gps_date - '6/03/2001' FROM trees
+--
+
+SELECT inv_date - '6/03/2001' FROM trees
+
+--
+
+SELECT site_id, maint                                       -- maintenance recommendation
+FROM trees
+WHERE to_char(inv_date - '6/03/2001', 'DD')::numeric > 400  -- >400 days since inventory
+
+--
 
 SELECT extract(month from gps_date), site_id
 FROM trees
 
+--
+
 SELECT to_char(gps_date, 'D Month YYYY '), site_id
 FROM trees
 
+--# Spatial Operations
+
+DROP TABLE qlayer;
+
+SELECT parcels.*
+INTO qlayer
+FROM parcels, parks
+WHERE st_intersects(parcels.geometry, parks.geometry)
+
+--
+
+DROP TABLE qlayer;
+
+SELECT st_intersectsection(parcels.geometry, parks.geometry) AS geometry
+INTO qlayer
+FROM parcels, firm
+WHERE firm.zone = 'X500'
+AND st_intersects(parcels.geometry, firm.geometry)
