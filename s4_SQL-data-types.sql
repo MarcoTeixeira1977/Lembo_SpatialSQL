@@ -141,12 +141,19 @@ FROM trees
 SELECT to_char(gps_date, 'D Month YYYY '), site_id
 FROM trees
 
---# Spatial Operations
+--# Spatial Operations (perform functions like buffer, containment, intersection and distance)
+                        -- postgis.net/docs/reference.html
 
 DROP TABLE qlayer;
 
 SELECT parcels.*
 INTO qlayer
+FROM parcels, parks
+WHERE st_intersects(parcels.geometry, parks.geometry)   -- a spatial transform (an intersect tf)
+
+--
+
+SELECT parcels.parcelkey, parks.name
 FROM parcels, parks
 WHERE st_intersects(parcels.geometry, parks.geometry)
 
@@ -154,8 +161,12 @@ WHERE st_intersects(parcels.geometry, parks.geometry)
 
 DROP TABLE qlayer;
 
-SELECT st_intersectsection(parcels.geometry, parks.geometry) AS geometry
+SELECT st_intersectsection(parcels.geometry, firm.geometry) AS geometry   -- intersectION
 INTO qlayer
 FROM parcels, firm
 WHERE firm.zone = 'X500'
-AND st_intersects(parcels.geometry, firm.geometry)
+AND st_intersects(parcels.geometry, firm.geometry)                        -- intersectS
+
+       -- intersectS() is a True/False. intersectION() returns geometry of shared portion
+       -- ...which will be jagged fractions of parcels, not neatly along borders!
+
