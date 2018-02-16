@@ -161,12 +161,15 @@ WHERE st_intersects(parcels.geometry, parks.geometry)
 
 DROP TABLE qlayer;
 
-SELECT st_intersectsection(parcels.geometry, firm.geometry) AS geometry   -- intersectION
+SELECT st_intersection(parcels.geometry, firm.geometry) AS geometry   -- intersectION
 INTO qlayer
 FROM parcels, firm
 WHERE firm.zone = 'X500'
-AND st_intersects(parcels.geometry, firm.geometry)                        -- intersectS
+AND st_intersects(parcels.geometry, firm.geometry)                    -- intersectS
 
-       -- intersectS() is a True/False. intersectION() returns geometry of shared portion
-       -- ...which will be jagged fractions of parcels, not neatly along borders!
+    -- intersectS() is a True/False. intersectION() returns geometry of shared portion
+    -- ...which will be jagged fractions of parcels, not neatly along borders!
+    -- Without 'AND' statement, we'd have to look at intersection between X500 and each parcel.
+    -- ...In most cases that will be a NULL, and we don't want those null geometries returned
+    -- ...<Is that because it wastes resources, or because it would need 'cleaning'?>
 
