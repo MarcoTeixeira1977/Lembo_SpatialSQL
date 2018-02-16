@@ -56,20 +56,66 @@ AND propclass = 210
 --# Character Operations
 
 DROP TABLE qlayer;                      -- delete the 'qlayer' table, to then create new query
-SELECT * INTO qlayer                    -- new table, to display as a separate layer in QGIS
 
+SELECT * INTO qlayer                    -- new table, to display as a separate layer in QGIS
 FROM parcels WHERE left(addrstreet,2) = 'BU'
 
 --
 
-SELECT * FROM parcels
+DROP TABLE qlayer;
+
+SELECT * INTO qlayer
+FROM parcels WHERE left(addrstreet,2) = 'BU'
+AND right(addrstreet,1) = 'E'            -- picks up (just) the 'Buffalo St E' properties
+
+--
+
+DROP TABLE qlayer;
+
+SELECT * INTO qlayer
+FROM parcels
 WHERE lower(addrstreet) = 'buffalo st e'
 
 --
 
-SELECT asmt::text FROM parcels
+SELECT concat(addrno, ' ', addrstreet) FROM parcels
+WHERE asmt > 100000
 
 --
 
-SELECT asmt::text::numeric FROM parcels
+SELECT asmt::text FROM parcels            -- changes format from 'real' (floating point) to text
+
+--
+
+SELECT asmt::text::numeric FROM parcels   -- numeric -> text -> numeric
+
+--
+
+SELECT asmt::numeric::money::text FROM parcels
+
+--
+
+SELECT concat('assessed value is', '   ', asmt::numeric::money::text) FROM parcels
+WHERE propclass = 210
+
+--
+
+SELECT concat('assessed value is', '   ', asmt::numeric::money::text), parcelkey
+FROM parcels, floodarea
+WHERE propclass = 210
+AND st_intersects(parcels.geometry, floodarea.geometry)
+
+--# Date & Time Operations
+
+SELECT date_part('day', gps_date)
+
+SELECT * FROM trees WHERE gps_date > '6/03/2001'
+
+SELECT gps_date - '6/03/2001' FROM trees
+
+SELECT extract(month from gps_date), site_id
+FROM trees
+
+SELECT to_char(gps_date, 'D Month YYYY '), site_id
+FROM trees
 
