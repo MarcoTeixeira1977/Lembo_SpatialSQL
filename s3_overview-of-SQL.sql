@@ -13,7 +13,7 @@ WHERE acres > 44
 
 DROP TABLE qlayer;
 
-SELECT parcels.* into qlayer   -- clear the 'qlayer' table and create new query
+SELECT parcels.* into qlayer   -- delete the 'qlayer' table and create a new one from this query
 FROM parcels, firm             -- FIRM is "Flood Insurance Rate Map" ('flood zone map')
 WHERE st_intersects(parcels.geometry,firm.geometry) -- a spatial function()
 AND firm.zone = 'X'            -- parcels that intersect the FIRM in zones designated 'X'

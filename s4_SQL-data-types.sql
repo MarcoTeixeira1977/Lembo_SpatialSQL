@@ -1,4 +1,4 @@
---Numeric Operations. (Would be much more difficult to perform in a traditional GIS)
+--# Numeric Operations. (Would be much more difficult to perform in a traditional GIS)
 
 SELECT asmt - land AS structvalue, parcelkey   -- 'assessed value' incl everything on a property
 FROM parcels                                   -- 'land' is just value of the land
@@ -40,7 +40,7 @@ WHERE valuepercdif > 1.25                      -- from virtual table, subject to
 SELECT avg(asmt), stddev(asmt), sum(asmt), stddev(asmt)/avg(asmt) AS CoeffOfVariation
 FROM parcels
 
--- Boolean Operations
+--# Boolean Operations
 
 SELECT *
 FROM parcels
@@ -53,10 +53,10 @@ FROM parcels
 WHERE acres > 3
 AND propclass = 210
 
---Character Operations
+--# Character Operations
 
-DROP TABLE qlayer;
-SELECT * INTO qlayer
+DROP TABLE qlayer;                      -- delete the 'qlayer' table, to then create new query
+SELECT * INTO qlayer                    -- new table, to display as a separate layer in QGIS
 
 FROM parcels WHERE left(addrstreet,2) = 'BU'
 
@@ -65,6 +65,11 @@ FROM parcels WHERE left(addrstreet,2) = 'BU'
 SELECT * FROM parcels
 WHERE lower(addrstreet) = 'buffalo st e'
 
+--
+
 SELECT asmt::text FROM parcels
 
+--
+
 SELECT asmt::text::numeric FROM parcels
+
