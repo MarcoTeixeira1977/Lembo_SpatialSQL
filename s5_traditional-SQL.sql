@@ -57,6 +57,16 @@ SELECT sum(asmt)::numeric::money AS sumasmt, propclass
 FROM parcels, firm
 WHERE st_contains(firm.geometry, parcels.geometry) -- value of parcels inside the 'X' floodzone
 AND firm.zone = 'X'
+AND propclass > 200 AND propclass < 300
+GROUP BY propclass
+ORDER BY propclass
+
+--
+
+SELECT sum(asmt)::numeric::money AS sumasmt, propclass
+FROM parcels, firm
+WHERE st_contains(firm.geometry, parcels.geometry) -- value of parcels inside the 'X' floodzone
+AND firm.zone = 'X'
 GROUP BY propclass
 
 --
