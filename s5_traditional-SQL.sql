@@ -95,13 +95,12 @@ ORDER BY value
 
 DROP TABLE qlayer;
 
-SELECT st_union(geometry) AS geometry, propclas.description
-INTO qlayer
+SELECT st_union(geometry) AS geometry, propclas.description  -- 'perform a merging of the data'
+INTO qlayer                             -- st_union() is an aggregate function for geometries
 FROM parcels, propclas
 WHERE
 	left(parcels.propclass::text,1) = left(propclas.value,1)
 	AND right(propclas.value,2) = '00'
-GROUP BY propclas.description
+GROUP BY propclas.description;           -- "union the geometries, based upon these descriptions"
 
-
-
+SELECT * FROM qlayer
