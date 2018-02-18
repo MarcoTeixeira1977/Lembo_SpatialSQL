@@ -34,8 +34,8 @@ SELECT acres, propclass FROM parcels
 
 SELECT sum(acres) AS sumacres, propclass       -- How many acres are in each property class?
 FROM parcels
-GROUP BY propclass       -- 'If you're going to use an aggregate function, with a 2nd column,
-                         -- ...you're going to have to use the GROUP BY'
+GROUP BY propclass       -- 'If you're going to use an aggregate function, with >2 records,
+                         -- ...you're going to have to use the GROUP BY' ...12min47-12min52 (?)
 
 --
 
@@ -53,10 +53,9 @@ GROUP BY propclass
 
 --
 
-SELECT sum(asmt) sumacres, propclass
+SELECT sum(asmt)::numeric::money AS sumasmt, propclass
 FROM parcels, firm
-WHERE propclass > 200 AND propclass < 300
-AND st_contains(firm.geometry, parcels.geometry)
+WHERE st_contains(firm.geometry, parcels.geometry) -- value of parcels inside the 'X' floodzone
 AND firm.zone = 'X'
 GROUP BY propclass
 
