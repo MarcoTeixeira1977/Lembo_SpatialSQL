@@ -107,14 +107,51 @@ SELECT * FROM qlayer                     -- 8 rows (geometries/ categories). Can
 
 --# CASE statements. (A generic conditional expression, similar to if/else in other languages)
 
-SELECT parcelkey, asmt,
-	CASE 	WHEN asmt = 0 then 0
-		WHEN asmt BETWEEN 1 AND 100000 THEN asmt * 1.07
-		WHEN asmt BETWEEN 100001 AND 500000 THEN asmt * 1.09
-		ELSE asmt * 1.11
-	END AS proptype
+SELECT parcelkey, asmt
 FROM parcels
 
+--
+
+SELECT parcelkey, asmt,
+	CASE                                         -- CASE statement with mathematical operations
+		WHEN asmt = 0 then 0
+		WHEN asmt BETWEEN 1 AND 100000 THEN asmt * 0.07        -- 7% tax
+		WHEN asmt BETWEEN 100001 AND 500000 THEN asmt * 0.09   -- 9% tax
+		ELSE asmt * 0.11
+	END AS taxbill
+FROM parcels                                                   -- parcelkey, asmt, taxbill cols
+
+--
+
+DROP TABLE qlayer;
+
+SELECT geometry, parcelkey, asmt,
+	CASE                                         -- CASE statement with text operations
+		WHEN left(propclass::text,1) = '2' THEN 'Residential'
+		WHEN left(propclass::text,1) = '3' THEN 'Vacant'
+		WHEN left(propclass::text,1) = '4' THEN 'Commercial'
+		WHEN left(propclass::text,1) = '5' THEN 'Amusement'
+		WHEN left(propclass::text,1) = '6' THEN 'Community Service'
+		ELSE 'Other'
+	END AS prototype
+INTO qlayer
+FROM parcels
+
+--
+
+DROP TABLE qlayer;
+
+SELECT zone,
+	CASE                                         -- CASE statement with spatial operations
+		WHEN zone = 'X' THEN st_buffer(geometry,10)       -- buffer the zone by 10
+		WHEN zone = 'AE' THEN st_buffer(geometry,20)      -- buffer the zone by 20
+		WHEN zone = 'X500' THEN st_buffer(geometry,30)    -- buffer the zone by 30
+		ELSE geometry                                     -- no buffer
+	END AS geometry
+INTO qlayer
+FROM firm
+
+--# Aggregate Functions
 
 
 
