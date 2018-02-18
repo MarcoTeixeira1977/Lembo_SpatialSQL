@@ -105,9 +105,15 @@ GROUP BY propclas.description;           -- "union the geometries, based upon th
 
 SELECT * FROM qlayer                     -- 8 rows (geometries/ categories). Can view in QGIS
 
---# CASE statements
+--# CASE statements. (A generic conditional expression, similar to if/else in other languages)
 
-
+SELECT parcelkey, asmt,
+	CASE 	WHEN asmt = 0 then 0
+		WHEN asmt BETWEEN 1 AND 100000 THEN asmt * 1.07
+		WHEN asmt BETWEEN 100001 AND 500000 THEN asmt * 1.09
+		ELSE asmt * 1.11
+	END AS proptype
+FROM parcels
 
 
 
