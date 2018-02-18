@@ -57,6 +57,14 @@ SELECT sum(asmt)::numeric::money AS sumasmt, propclass
 FROM parcels, firm
 WHERE st_contains(firm.geometry, parcels.geometry) -- value of parcels inside the 'X' floodzone
 AND firm.zone = 'X'
+GROUP BY propclass
+
+--
+
+SELECT sum(asmt)::numeric::money AS sumasmt, propclass
+FROM parcels, firm
+WHERE st_contains(firm.geometry, parcels.geometry)
+AND firm.zone = 'X'
 AND propclass > 200 AND propclass < 300
 GROUP BY propclass
 ORDER BY propclass
@@ -65,19 +73,35 @@ ORDER BY propclass
 
 SELECT sum(asmt)::numeric::money AS sumasmt, propclass
 FROM parcels, firm
-WHERE st_contains(firm.geometry, parcels.geometry) -- value of parcels inside the 'X' floodzone
-AND firm.zone = 'X'
+WHERE st_contains(firm.geometry, parcels.geometry)
+AND left(propclass::text,1) = '2'         -- With only one AND. But slow, to convert to text
 GROUP BY propclass
+ORDER BY propclass
 
 --
 
-SELECT sum(acres) AS sumacres, left(propclass::text,1)
-FROM parcels
-GROUP BY left(propclass::text,1)
+SELECT * FROM propclas                    -- NYState classification codes: 100s Agriculture etc
 
 --
 
+SELECT parcels.parcelkey, parcels.propclass, propclas.description, propclas.value
+FROM parcels, propclas
+WHERE
+	left(parcels.propclass::text,1) = left(propclas.value,1)
+	AND right(propclas.value,2) = '00'
+ORDER BY value
 
+--
+
+DROP TABLE qlayer;
+
+SELECT st_union(geometry) AS geometry, propclas.description
+INTO qlayer
+FROM parcels, propclas
+WHERE
+	left(parcels.propclass::text,1) = left(propclas.value,1)
+	AND right(propclas.value,2) = '00'
+GROUP BY propclas.description
 
 
 
