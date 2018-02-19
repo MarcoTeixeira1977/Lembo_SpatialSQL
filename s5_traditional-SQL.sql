@@ -170,6 +170,22 @@ WHERE ob_2000 > 0                                         -- avoids 'bogus' blan
 
 --
 
-SELECT max(ob_1995), max(ob_2000), max(ob_2009) FROM states
+SELECT avg(ob_1995), avg(ob_2000), avg(ob_2009) FROM states
+
+--
+
+SELECT stddev(ob_2009)/avg(ob_2009) AS CV FROM states     -- coefficient of variation
+
+--
+
+SELECT stddev(ob_2009)/avg(ob_2009) AS CV FROM states
+
+Union All                                                 -- add results of 2nd query to bottom
+
+SELECT stddev(ob_2000)/avg(ob_2000) AS CV FROM states
+
+
+
+
 
 
