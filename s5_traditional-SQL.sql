@@ -153,5 +153,23 @@ FROM firm
 
 --# Aggregate Functions
 
+SELECT * FROM states                                      -- a new table, about obesity levels
+
+--
+
+SELECT avg(ob_1995) AS avg_obs_1995 FROM states
+
+--
+
+SELECT corr(ob_1995,ob_2000) AS pearson FROM states       -- Pearson correlation coefficient
+
+--
+
+SELECT min(ob_2000) AS min_obs_2000 FROM states
+WHERE ob_2000 > 0                                         -- avoids 'bogus' blank record here
+
+--
+
+SELECT max(ob_1995), max(ob_2000), max(ob_2009) FROM states
 
 
