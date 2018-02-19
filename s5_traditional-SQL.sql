@@ -178,12 +178,42 @@ SELECT stddev(ob_2009)/avg(ob_2009) AS CV FROM states     -- coefficient of vari
 
 --
 
-SELECT stddev(ob_2009)/avg(ob_2009) AS CV FROM states
+SELECT '2009' AS yr, stddev(ob_2009)/avg(ob_2009) AS CV FROM states
 
 Union All                                                 -- add results of 2nd query to bottom
 
-SELECT stddev(ob_2000)/avg(ob_2000) AS CV FROM states
+SELECT '2000' AS yr, stddev(ob_2000)/avg(ob_2000) AS CV FROM states
 
+Union All                                                 -- add results of 3rd query (same cols)
+
+SELECT '1995' AS yr, stddev(ob_1995)/avg(ob_1995) AS CV FROM states
+
+--
+
+SELECT	st_centroid(geometry),                            -- centroid for each state (49 rows)
+		st_centroid(geometry)
+FROM states
+
+--
+
+SELECT	st_X(st_centroid(geometry)),                      -- X coord for each state (49 rows)
+		st_Y(st_centroid(geometry))
+FROM states
+
+--
+
+SELECT	AVG(st_x(st_centroid(geometry))) AS X,            -- average X of all states (1 row)
+		AVG(st_y(st_centroid(geometry))) AS Y             -- ...and Y. The mean centre of USA
+FROM states
+
+--
+
+DROP TABLE qlayer;
+
+SELECT	st_point(AVG(st_x(st_centroid(geometry))),        -- convert x,y into an actual point
+		AVG(st_y(st_centroid(geometry)))) AS geometry
+INTO qlayer
+FROM states
 
 
 
