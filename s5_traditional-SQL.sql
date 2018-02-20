@@ -339,9 +339,9 @@ CREATE TABLE mytable (name text, geometry geometry(Geometry,2261));  -- '2261' i
 SELECT * FROM mytable;                             -- 2 column headers (no rows exist yet)
 
 INSERT INTO mytable (name, geometry)               -- add some rows to 'mytable' (2 cols)
-SELECT name, geometry FROM parks;                  -- ...(that are result of an SQL statement)
+SELECT name, geometry FROM parks WHERE size > 1;   -- ...(result of an SQL statement (1 acre))
 
-SELECT * FROM mytable                              -- 23 rows
+SELECT * FROM mytable                              -- 10 rows
 
 --
 
@@ -350,7 +350,7 @@ DROP TABLE mytable;                                -- (use after 'mytable' creat
 CREATE TABLE mytable (name text, geometry geometry(Geometry,2261));
 
 INSERT INTO mytable (name, geometry)
-SELECT name, st_buffer(geometry,500) FROM parks;   -- 500foot buffer around each park geometry
+SELECT name, st_buffer(geometry,500) FROM parks;   -- 500m buffer around each park (23 rows)
 
 SELECT * FROM mytable
 
@@ -361,12 +361,12 @@ DROP TABLE mytable;
 CREATE TABLE mytable (name text, geometry geometry(Geometry,2261));
 
 INSERT INTO mytable (name, geometry)
-SELECT name, geometry FROM parks;
+SELECT name, geometry FROM parks;                   -- 23 rows
 
 ALTER TABLE mytable
-ADD column parksize double precision;               -- new column, but no data in it yet
+ADD column parksize double precision;               -- add new column, (but no data in it yet)
 
-UPDATE mytable
+UPDATE mytable                                      -- entering some data into the new column
 SET parksize = parks.size
 FROM parks
 WHERE parks.name = mytable.name;
