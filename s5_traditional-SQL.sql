@@ -334,7 +334,12 @@ WHERE numstates = 3
 
 --# Changing data. (DROP; CREATE; INSERT; ALTER; UPDATE)
 
-CREATE TABLE mytable (name text, geometry geometry(Geometry,2261));
+DROP TABLE mytable;                                -- (can use this after 'mytable' created)
 
+CREATE TABLE mytable (name text, geometry geometry(Geometry,2261));  -- '2261' is coord system
+SELECT * FROM mytable                              -- returns 2 column headers (no rows exist)
+
+INSERT INTO mytable (name, geometry)               -- add some rows to 'mytable'
+SELECT name, geometry FROM parks;                  -- ...(from 'parks' table)
 
 
