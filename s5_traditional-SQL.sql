@@ -231,7 +231,7 @@ SELECT	st_point(sum(st_x(st_centroid(geometry)) * ob_2000)/sum(ob_2000),
 INTO qlayer
 FROM states
 
---# Potpourri (SORT; LIMIT; OFFSET; IN; BETWEEN)
+--# Potpourri. (SORT; LIMIT; OFFSET; IN; BETWEEN)
 
 SELECT ob_2009, name
 FROM states
@@ -270,7 +270,7 @@ WHERE ob_2009 BETWEEN 25 AND 30                                   -- 9 rows. (In
 ORDER BY ob_2009 DESC
 
 --
--- Are any States consistently in the Top10, all 3 years?
+-- Are any States consistently in the Top10 obese, all 3 years?
 
 SELECT name FROM
 	(SELECT name, count(name) AS numstates FROM     -- start virtual table T2 (13 rows; no dup)
@@ -298,6 +298,43 @@ SELECT name FROM
 	) AS T2                                         -- end virtual table T2 (13 rows; no dup)
 WHERE numstates = 3                                 -- in Top10 all 3 years (7 rows)
 
+--
+
+DROP TABLE qlayer;
+
+SELECT geometry, name
+INTO qlayer
+FROM states WHERE name IN
+(SELECT name FROM                                   -- start virtual table #3 (7 rows)
+	(SELECT name, count(name) AS numstates FROM
+		(
+			(SELECT name, ob_2009 AS ob
+			FROM states
+			ORDER BY ob_2009 DESC
+			LIMIT 10)
+			
+			UNION ALL
+			
+			(SELECT name, ob_1995 AS ob
+			FROM states
+			ORDER BY ob_1995 DESC
+			LIMIT 10)
+			
+			UNION ALL
+			
+			(SELECT name, ob_2000 AS ob
+			FROM states
+			ORDER BY ob_2000 DESC
+			LIMIT 10)
+		) AS T1
+	GROUP BY name
+	) AS T2
+WHERE numstates = 3  
+)                                                  -- end virtual table #3
+
+--# Changing data. (DROP; CREATE; INSERT; ALTER; UPDATE)
+
+CREATE TABLE mytable (name text, geometry geometry(Geometry,2261));
 
 
 
