@@ -332,14 +332,48 @@ FROM states WHERE name IN
 WHERE numstates = 3  
 )                                                  -- end virtual table #3
 
---# Changing data. (DROP; CREATE; INSERT; ALTER; UPDATE)
-
-DROP TABLE mytable;                                -- (can use this after 'mytable' created)
+--# Changing data. (DROP; CREATE; INSERT; ALTER; UPDATE) XXXX vs SELECT INTO qlayer ???
 
 CREATE TABLE mytable (name text, geometry geometry(Geometry,2261));  -- '2261' is coord system
-SELECT * FROM mytable                              -- returns 2 column headers (no rows exist)
 
-INSERT INTO mytable (name, geometry)               -- add some rows to 'mytable'
-SELECT name, geometry FROM parks;                  -- ...(from 'parks' table)
+SELECT * FROM mytable                              -- 2 column headers (no rows exist yet)
+
+INSERT INTO mytable (name, geometry)               -- add some rows to 'mytable' (2 cols)
+SELECT name, geometry FROM parks;                  -- ...(2 cols from 'parks' table)
+
+SELECT * FROM mytable
+
+--
+
+DROP TABLE mytable;                                -- (use after 'mytable' created, else error)
+
+CREATE TABLE mytable (name text, geometry geometry(Geometry,2261));
+
+INSERT INTO mytable (name, geometry)
+SELECT name, st_buffer(geometry,500) FROM parks;   -- 500 foot buffer around each park geometry
+
+SELECT * FROM mytable
+
+--
+
+DROP TABLE mytable;
+
+CREATE TABLE mytable (name text, geometry geometry(Geometry,2261));
+
+INSERT INTO mytable (name, geometry)
+SELECT name, geometry FROM parks;
+
+ALTER TABLE mytable
+ADD column parksize double precision;               -- new column, but no data in it yet
+
+UPDATE mytable
+SET parksize = parks.size
+FROM parks
+WHERE parks.name = mytable.name;
+
+SELECT * FROM mytable
+
+
+
 
 
