@@ -332,16 +332,16 @@ FROM states WHERE name IN
 WHERE numstates = 3  
 )                                                  -- end virtual table #3
 
---# Changing data. (DROP; CREATE; INSERT; ALTER; UPDATE) XXXX vs SELECT INTO qlayer ???
+--# Changing data. (DROP; CREATE; INSERT; ALTER; UPDATE) [??? v's SELECT ... INTO qlayer ???]
 
 CREATE TABLE mytable (name text, geometry geometry(Geometry,2261));  -- '2261' is coord system
 
-SELECT * FROM mytable                              -- 2 column headers (no rows exist yet)
+SELECT * FROM mytable;                             -- 2 column headers (no rows exist yet)
 
 INSERT INTO mytable (name, geometry)               -- add some rows to 'mytable' (2 cols)
-SELECT name, geometry FROM parks;                  -- ...(2 cols from 'parks' table)
+SELECT name, geometry FROM parks;                  -- ...(that are result of an SQL statement)
 
-SELECT * FROM mytable
+SELECT * FROM mytable                              -- 23 rows
 
 --
 
@@ -350,7 +350,7 @@ DROP TABLE mytable;                                -- (use after 'mytable' creat
 CREATE TABLE mytable (name text, geometry geometry(Geometry,2261));
 
 INSERT INTO mytable (name, geometry)
-SELECT name, st_buffer(geometry,500) FROM parks;   -- 500 foot buffer around each park geometry
+SELECT name, st_buffer(geometry,500) FROM parks;   -- 500foot buffer around each park geometry
 
 SELECT * FROM mytable
 
