@@ -216,9 +216,10 @@ INTO qlayer
 FROM states                                               -- (Also show 'states' layer in QGIS)
 
 --
+-- Weighted Mean Centre ...weighted by obesity
 
-SELECT	sum(st_x(st_centroid(geometry)) * ob_2000)/sum(ob_2000) AS X,  -- Weighted Mean Centre
-		sum(st_y(st_centroid(geometry)) * ob_2000)/sum(ob_2000) AS Y   -- ...weighted by obesity
+SELECT	sum(st_x(st_centroid(geometry)) * ob_2000)/sum(ob_2000) AS X,
+		sum(st_y(st_centroid(geometry)) * ob_2000)/sum(ob_2000) AS Y
 FROM states
 
 --
@@ -242,9 +243,60 @@ LIMIT 10
 SELECT ob_2009, name
 FROM states
 ORDER BY ob_2009                                      -- default is 'ASC'
-OFFSET 20                                             -- ignore the first 20 results
+OFFSET 9                                              -- skip the first 9 results
 LIMIT 10                                              -- return the next 10 (rows 21-30)
 
+--
+
+SELECT ob_2009, name
+FROM states
+WHERE name IN('New York', 'California', 'Maine')      -- to avoid lots of 'OR' statements
+
+--
+
+SELECT name FROM states WHERE left(name,1) = 'M'
+
+--
+
+SELECT ob_2009, name
+FROM states
+WHERE name IN(SELECT name FROM states WHERE left(name,1) = 'M')   -- 8 rows
+
+--
+
+SELECT ob_2009, name
+FROM states
+WHERE ob_2009 BETWEEN 25 AND 30                                   -- 9 rows. (Indiana _is_ '30')
+ORDER BY ob_2009 DESC
+
+--
+-- Are any States consistently in the Top10, all 3 years?
+
+SELECT name FROM
+	(SELECT name, count(name) AS numstates FROM     -- start virtual table T2 (13 rows; no dup)
+		(                                           -- start virtual table T1 (30 rows; duplicn)
+			(SELECT name, ob_2009 AS ob
+			FROM states
+			ORDER BY ob_2009 DESC                   -- **** ORDER BY 'ob' ?
+			LIMIT 10)                               -- Top10 states in 2009
+			
+			UNION ALL
+			
+			(SELECT name, ob_1995 AS ob
+			FROM states
+			ORDER BY ob_1995 DESC                   -- **** ORDER BY 'ob' ?
+			LIMIT 10)                               -- Top10 states in 1995
+			
+			UNION ALL
+			
+			(SELECT name, ob_2000 AS ob
+			FROM states
+			ORDER BY ob_2000 DESC                   -- **** ORDER BY 'ob' ?
+			LIMIT 10)                               -- Top10 states in 2000
+		) AS T1                                     -- end virtual table T1 (30 rows; duplicn)
+	GROUP BY name
+	) AS T2                                         -- end virtual table T2 (13 rows; no dup)
+WHERE numstates = 3                                 -- in Top10 all 3 years (7 rows)
 
 
 
