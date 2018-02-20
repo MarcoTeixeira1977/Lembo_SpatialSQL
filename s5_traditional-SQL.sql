@@ -213,13 +213,39 @@ DROP TABLE qlayer;
 SELECT	st_point(avg(st_x(st_centroid(geometry))),        -- convert x,y into an actual point
 		avg(st_y(st_centroid(geometry)))) AS geometry     -- ...'Kansas North' coord system
 INTO qlayer
+FROM states                                               -- (Also show 'states' layer in QGIS)
+
+--
+
+SELECT	sum(st_x(st_centroid(geometry)) * ob_2000)/sum(ob_2000) AS X,  -- Weighted Mean Centre
+		sum(st_y(st_centroid(geometry)) * ob_2000)/sum(ob_2000) AS Y   -- ...weighted by obesity
 FROM states
 
 --
 
-SELECT	sum(st_x(st_centroid(geometry)) * ob_2000)/sum(ob_2000) AS X,   -- Weighted Mean Centre
-		sum(st_y(st_centroid(geometry)) * ob_2000)/sum(ob_2000) AS Y
+DROP TABLE qlayer;
+
+SELECT	st_point(sum(st_x(st_centroid(geometry)) * ob_2000)/sum(ob_2000),
+		sum(st_y(st_centroid(geometry)) * ob_2000)/sum(ob_2000)) AS geometry
+INTO qlayer
 FROM states
+
+--# Potpourri (SORT; LIMIT; OFFSET; IN; BETWEEN)
+
+SELECT ob_2009, name
+FROM states
+ORDER BY ob_2009 DESC
+LIMIT 10
+
+--
+
+SELECT ob_2009, name
+FROM states
+ORDER BY ob_2009                                      -- default is 'ASC'
+OFFSET 20                                             -- ignore the first 20 results
+LIMIT 10                                              -- return the next 10 (rows 21-30)
+
+
 
 
 
