@@ -196,26 +196,30 @@ FROM states
 
 --
 
-SELECT	st_X(st_centroid(geometry)),                      -- X coord for each state (49 rows)
-		st_Y(st_centroid(geometry))
+SELECT	st_x(st_centroid(geometry)),                      -- X coord for each state (49 rows)
+		st_y(st_centroid(geometry))
 FROM states
 
 --
 
-SELECT	AVG(st_x(st_centroid(geometry))) AS X,            -- average X of all states (1 row)
-		AVG(st_y(st_centroid(geometry))) AS Y             -- ...and Y. The mean centre of USA
+SELECT	avg(st_x(st_centroid(geometry))) AS X,            -- average X of all states (1 row)
+		avg(st_y(st_centroid(geometry))) AS Y             -- ...and Y. The mean centre of USA
 FROM states
 
 --
 
 DROP TABLE qlayer;
 
-SELECT	st_point(AVG(st_x(st_centroid(geometry))),        -- convert x,y into an actual point
-		AVG(st_y(st_centroid(geometry)))) AS geometry
+SELECT	st_point(avg(st_x(st_centroid(geometry))),        -- convert x,y into an actual point
+		avg(st_y(st_centroid(geometry)))) AS geometry     -- ...'Kansas North' coord system
 INTO qlayer
 FROM states
 
+--
 
+SELECT	sum(st_x(st_centroid(geometry)) * ob_2000)/sum(ob_2000) AS X,   -- Weighted Mean Centre
+		sum(st_y(st_centroid(geometry)) * ob_2000)/sum(ob_2000) AS Y
+FROM states
 
 
 
