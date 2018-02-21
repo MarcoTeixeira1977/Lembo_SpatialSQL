@@ -363,15 +363,18 @@ CREATE TABLE mytable (name text, geometry geometry(Geometry,2261));
 INSERT INTO mytable (name, geometry)
 SELECT name, geometry FROM parks;                   -- 23 rows
 
-ALTER TABLE mytable
+ALTER TABLE mytable                                 -- ALTER
 ADD column parksize double precision;               -- add new column, (but no data in it yet)
 
-UPDATE mytable                                      -- entering some data into the new column
+--UPDATE mytable                                    -- entering some data into the new column
+--SET parksize = 1.3
+--WHERE name = 'Baker Park';
+UPDATE mytable                                      -- 'a little more sophisticated UPDATE stmt'
 SET parksize = parks.size
 FROM parks
 WHERE parks.name = mytable.name;
 
-SELECT * FROM mytable
+SELECT * FROM mytable                                -- 23 rows
 
 
 
