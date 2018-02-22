@@ -3,7 +3,7 @@
 -- http://www.spatialreference.org
 -- SRID is a Spatial Reference system IDentifier
 
-SELECT ST_SRID(geom) FROM states2;                       -- find a projection being used
+SELECT ST_SRID(geom) FROM states2;                       -- what projection you currently have
 
 --
 
