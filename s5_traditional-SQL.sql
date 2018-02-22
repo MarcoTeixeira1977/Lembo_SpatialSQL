@@ -26,6 +26,8 @@ FROM parcels
 RIGHT JOIN propclas ON
 parcels.propclass = propclas.value::numeric
 
+
+
 --# GROUP BY. (Performs aggregate computations on data, and groups them by one or more columns)
 
 SELECT acres, propclass FROM parcels
@@ -105,6 +107,8 @@ GROUP BY propclas.description;           -- "union the geometries, based upon th
 
 SELECT * FROM qlayer                     -- 8 rows (geometries/ categories). Can view in QGIS
 
+
+
 --# CASE statements. (A generic conditional expression, similar to if/else in other languages)
 
 SELECT parcelkey, asmt
@@ -150,6 +154,8 @@ SELECT zone,
 	END AS geometry
 INTO qlayer
 FROM firm
+
+
 
 --# Aggregate Functions
 
@@ -230,6 +236,8 @@ SELECT	st_point(sum(st_x(st_centroid(geometry)) * ob_2000)/sum(ob_2000),
 		sum(st_y(st_centroid(geometry)) * ob_2000)/sum(ob_2000)) AS geometry
 INTO qlayer
 FROM states
+
+
 
 --# Potpourri. (SORT; LIMIT; OFFSET; IN; BETWEEN)
 
@@ -332,6 +340,8 @@ FROM states WHERE name IN
 WHERE numstates = 3  
 )                                                  -- end virtual table #3
 
+
+
 --# Changing data. (DROP; CREATE; INSERT; ALTER; UPDATE) [??? v's SELECT ... INTO qlayer ???]
 
 CREATE TABLE mytable (name text, geometry geometry(Geometry,2261));  -- '2261' is coord system
@@ -371,12 +381,14 @@ ADD column parksize double precision;               -- add new column, (but no d
 --WHERE name = 'Baker Park';
 UPDATE mytable                                      -- 'a little more sophisticated UPDATE stmt'
 SET parksize = parks.size
-FROM parks                                          -- is this necessary?
+FROM parks                                          -- (this is still necessary)
 WHERE parks.name = mytable.name;
 
 SELECT * FROM mytable                               -- 23 rows
 
 
+
+--# Writing SQL Functions
 
 
 
