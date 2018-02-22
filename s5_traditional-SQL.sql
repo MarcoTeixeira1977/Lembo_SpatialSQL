@@ -371,10 +371,10 @@ ADD column parksize double precision;               -- add new column, (but no d
 --WHERE name = 'Baker Park';
 UPDATE mytable                                      -- 'a little more sophisticated UPDATE stmt'
 SET parksize = parks.size
-FROM parks
+FROM parks                                          -- is this necessary?
 WHERE parks.name = mytable.name;
 
-SELECT * FROM mytable                                -- 23 rows
+SELECT * FROM mytable                               -- 23 rows
 
 
 
