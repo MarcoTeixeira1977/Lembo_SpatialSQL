@@ -390,5 +390,21 @@ SELECT * FROM mytable                               -- 23 rows
 
 --# Writing SQL Functions
 
+CREATE FUNCTION __aaa_getfloodgeom (x text)         -- expecting a text value passed-in (variable)
+RETURNS TABLE(mygeom geometry) AS                   -- return a geometry (that's in a table)
+$$
+	SELECT st_intersection(parcels.geometry,firm.geometry) AS geometry
+	FROM parcels,firm
+	WHERE st_intersects(parcels.geometry,firm.geometry) 
+	AND firm.zone = $1	;                           -- 'equal to 1st variable I passed-in' (x)
+$$ LANGUAGE SQL;
+
+SELECT __aaa_getfloodgeom('AE')                   -- so no need to write a full query each time
+
+--
+
+DROP TABLE qlayer;
+SELECT __aaa_getfloodgeom('AE') INTO qlayer
+
 
 
