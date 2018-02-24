@@ -128,12 +128,17 @@ GROUP BY pc                                         -- 9 rows (0-9, but no '1')
 
 --Distance :
 
---convex hull around the 6 cities in upstate New York
-
+DROP TABLE qlayer;
+--create convex hull around the geometries in those 6 cities in upstate New York
 SELECT st_ConvexHull(geometry) AS geometry
 INTO qlayer
 FROM upstate
 
+--...That gave separate points. Instead we have to turn those geometries into a multi-part
+DROP TABLE qlayer;
+SELECT st_ConvexHull(geometry) AS geometry
+INTO qlayer
+FROM upstate
 
 
 
