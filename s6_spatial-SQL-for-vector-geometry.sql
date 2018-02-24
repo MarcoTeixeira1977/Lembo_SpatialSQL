@@ -121,6 +121,24 @@ AND firm.zone = 'AE'                                -- parcel fully or partly in
 
 --
 
+SELECT sum(asmt)::numeric::money, left(propclass::text,1) AS pc
+FROM parcels,firm
+WHERE st_contains(firm.geometry,parcels.geometry)
+GROUP BY pc                                         -- 9 rows (0-9, but no '1')
+
+--Distance :
+
+--convex hull around the 6 cities in upstate New York
+
+SELECT st_ConvexHull(geometry) AS geometry
+INTO qlayer
+FROM upstate
+
+
+
+
+
+
 
 
 
