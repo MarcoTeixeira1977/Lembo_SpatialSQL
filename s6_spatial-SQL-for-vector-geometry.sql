@@ -1,7 +1,7 @@
 --# coordinate system manipulation
 
--- http://www.spatialreference.org
--- SRID is a Spatial Reference system IDentifier
+--http://www.spatialreference.org
+--SRID is a Spatial Reference system IDentifier
 
 SELECT ST_SRID(geom) FROM states2;                     -- what is current projection ('geom' field)
                                                        -- ...'0' means 'don't know' (where in space)
@@ -27,3 +27,41 @@ ALTER TABLE states2                   -- change existing table/layer, not create
 	ALTER COLUMN geom
 	TYPE Geometry(Multipolygon,2959)
 	USING ST_Transform(geom,2959);    -- convert 'geom' col (to value '2959')
+
+
+
+--# Spatial operations. (Adjacent, Buffer, Contains, Distance, Intersect, more...)
+
+--http://postgis.net/docs/manual-1.3/ch06.html
+--http://postgis.org/docs/reference.html
+
+--Adjacent :
+
+SELECT * FROM parcels
+WHERE st_touches(parcels.geometry,
+	(SELECT geometry FROM parcels WHERE parcelkey = '50070006200000010150000000')
+	)
+
+--
+
+SELECT sum(asmt) FROM parcels                          -- get sum of the land values
+WHERE st_touches(parcels.geometry,
+	(SELECT geometry FROM parcels WHERE parcelkey = '50070006200000010150000000')
+	)
+
+--
+
+SELECT sum(asmt) FROM parcels
+WHERE st_touches(parcels.geometry,
+	(SELECT geometry FROM parcels WHERE parcelkey = '50070006200000010150000000')
+	)
+AND asmt > 170000                                      -- 'find rich neighbours'
+
+
+
+
+
+
+
+
+
