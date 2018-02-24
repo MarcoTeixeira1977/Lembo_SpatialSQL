@@ -37,46 +37,76 @@ ALTER TABLE states2                   -- change existing table/layer, not create
 
 --Adjacent :
 
-SELECT * FROM parcels                                  -- (9 rows)
+SELECT * FROM parcels
 WHERE st_touches(parcels.geometry,
 	(SELECT geometry
 	FROM parcels
-	WHERE parcelkey = '50070006200000010150000000')    -- What other parcels touch a specific one?
+	WHERE parcelkey = '50070006200000010150000000')     -- Parcels touching specific one. (9 rows)
 	)
 
 --
 
 DROP TABLE qlayer
 
-SELECT * INTO qlayer
+SELECT * INTO qlayer FROM parcels
+WHERE st_touches(parcels.geometry,
+	(SELECT geometry
+	FROM parcels
+	WHERE parcelkey = '50070006200000010150000000')
+	)
+
+--
+
+SELECT sum(asmt)::numeric::money AS sumasmt, sum(land)::numeric::money AS sumland
+FROM parcels
+WHERE st_touches(parcels.geometry,
+	(SELECT geometry
+	FROM parcels
+	WHERE parcelkey = '50070006200000010150000000')    -- get value of adjacent assessments/land
+	)
+
+--
+
+SELECT addrno || ' ' || addrstreet AS address
+FROM parcels
+WHERE st_touches(parcels.geometry,
+	(SELECT geometry
+	FROM parcels
+	WHERE parcelkey = '50070006200000010150000000')    -- addresses of adjacent parcels
+	)
+--|| represents string concatenation. Unfortunately, not portable across all sql dialects
+--https://stackoverflow.com/questions/23372550/what-does-sql-select-symbol-mean
+	
+--
+
+SELECT addrno || ' ' || addrstreet AS address
 FROM parcels
 WHERE st_touches(parcels.geometry,
 	(SELECT geometry
 	FROM parcels
 	WHERE parcelkey = '50070006200000010150000000')
 	)
+AND asmt > 210000                                      -- 'find rich neighbours' (5 rows)
 
---
+--Buffer :
 
-SELECT sum(asmt) FROM parcels                          -- get sum of the land values
-WHERE st_touches(parcels.geometry,
-	(SELECT geometry
-	FROM parcels
-	WHERE parcelkey = '50070006200000010150000000')
-	)
+DROP TABLE qlayer;
 
---
+SELECT parcels.parcel_id, st_buffer(geometry,100) AS geometry
+INTO qlayer
+FROM parcels
+WHERE parcelkey = '50070000900000040130000000'
 
-SELECT sum(asmt) FROM parcels
-WHERE st_touches(parcels.geometry,
-	(SELECT geometry
-	FROM parcels
-	WHERE parcelkey = '50070006200000010150000000')
-	)
-AND asmt > 170000                                      -- 'find rich neighbours'
+--Contains :
 
+DROP TABLE qlayer;
 
-
+SELECT parcels.*
+INTO qlayer
+FROM parcels,firm
+WHERE st_contains(firm.geometry,parcels.geometry)
+AND firm.zone = 'AE'                  -- parcel with zone 'AE' fully-contained in FIRM flood area
+                                      -- ...107 rows
 
 
 
