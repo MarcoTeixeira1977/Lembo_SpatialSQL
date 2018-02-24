@@ -37,23 +37,41 @@ ALTER TABLE states2                   -- change existing table/layer, not create
 
 --Adjacent :
 
-SELECT * FROM parcels
+SELECT * FROM parcels                                  -- (9 rows)
 WHERE st_touches(parcels.geometry,
-	(SELECT geometry FROM parcels WHERE parcelkey = '50070006200000010150000000')
+	(SELECT geometry
+	FROM parcels
+	WHERE parcelkey = '50070006200000010150000000')    -- What other parcels touch a specific one?
+	)
+
+--
+
+DROP TABLE qlayer
+
+SELECT * INTO qlayer
+FROM parcels
+WHERE st_touches(parcels.geometry,
+	(SELECT geometry
+	FROM parcels
+	WHERE parcelkey = '50070006200000010150000000')
 	)
 
 --
 
 SELECT sum(asmt) FROM parcels                          -- get sum of the land values
 WHERE st_touches(parcels.geometry,
-	(SELECT geometry FROM parcels WHERE parcelkey = '50070006200000010150000000')
+	(SELECT geometry
+	FROM parcels
+	WHERE parcelkey = '50070006200000010150000000')
 	)
 
 --
 
 SELECT sum(asmt) FROM parcels
 WHERE st_touches(parcels.geometry,
-	(SELECT geometry FROM parcels WHERE parcelkey = '50070006200000010150000000')
+	(SELECT geometry
+	FROM parcels
+	WHERE parcelkey = '50070006200000010150000000')
 	)
 AND asmt > 170000                                      -- 'find rich neighbours'
 
