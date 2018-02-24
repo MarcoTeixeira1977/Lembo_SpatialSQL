@@ -147,9 +147,9 @@ DROP TABLE qlayer;
 
 SELECT zone,
 	CASE                                         -- CASE statement with spatial operations
-		WHEN zone = 'X' THEN st_buffer(geometry,10)       -- buffer the zone by 10
-		WHEN zone = 'AE' THEN st_buffer(geometry,20)      -- buffer the zone by 20
-		WHEN zone = 'X500' THEN st_buffer(geometry,30)    -- buffer the zone by 30
+		WHEN zone = 'X' THEN st_buffer(geometry,10)       -- buffer the zone by 10ft
+		WHEN zone = 'AE' THEN st_buffer(geometry,20)      -- buffer the zone by 20ft
+		WHEN zone = 'X500' THEN st_buffer(geometry,30)    -- buffer the zone by 30ft
 		ELSE geometry                                     -- no buffer
 	END AS geometry
 INTO qlayer
@@ -360,9 +360,10 @@ DROP TABLE mytable;                                -- (use after 'mytable' creat
 CREATE TABLE mytable (name text, geometry geometry(Geometry,2261));
 
 INSERT INTO mytable (name, geometry)
-SELECT name, st_buffer(geometry,500) FROM parks;   -- 500m buffer around each park (23 rows)
+SELECT name, st_buffer(geometry,500) FROM parks;   -- 500ft buffer around each park (23 rows)
 
 SELECT * FROM mytable
+--http://spatialreference.org/ref/epsg/nad83-new-york-central-ftus/ ...EPSG:2261 uses feet
 
 --
 
@@ -399,7 +400,7 @@ $$
 	AND firm.zone = $1	;                           -- 'equal to 1st variable I passed-in' (x)
 $$ LANGUAGE SQL;
 
-SELECT __aaa_getfloodgeom('AE')                   -- so no need to write a full query each time
+SELECT __aaa_getfloodgeom('AE')                     -- so no need to write a full query each time
 
 --
 
