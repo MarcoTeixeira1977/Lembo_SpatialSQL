@@ -105,10 +105,21 @@ SELECT parcels.*
 INTO qlayer
 FROM parcels,firm
 WHERE st_contains(firm.geometry,parcels.geometry)
-AND firm.zone = 'AE'                  -- parcel with zone 'AE' fully-contained in FIRM flood area
-                                      -- ...107 rows
+AND firm.zone = 'AE'                           -- parcel is fully-contained inside flood zone 'AE' 
+                                               -- ...107 rows
 
+--
 
+DROP TABLE qlayer;
+
+SELECT parcels.*
+INTO qlayer
+FROM parcels,firm
+WHERE st_intersects(firm.geometry,parcels.geometry) -- cf. 'Contains' [to help understanding that]
+AND firm.zone = 'AE'                                -- parcel fully or partly in flood zone 'AE' 
+                                                    -- ...320 rows
+
+--
 
 
 
