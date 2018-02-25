@@ -126,21 +126,23 @@ FROM parcels,firm
 WHERE st_contains(firm.geometry,parcels.geometry)
 GROUP BY pc                                         -- 9 rows (0-9, but no '1')
 
+
+--create a convex hull around the geometries in 'those 6 cities' in upstate New York
+
+DROP TABLE qlayer;
+SELECT ST_ConvexHull(geometry) AS geometry
+INTO qlayer
+FROM upstate
+
+--...That gave 6 points. Instead we have to turn those 6 geometries into a multi-part geometry
+--ST_Collect() turns a set of geometries (polygons/points/lines) into a collection,
+--so it becomes a multi-part object
+DROP TABLE qlayer;
+SELECT ST_ConvexHull(ST_Collect(geometry)) AS geometry -- 4-sided shape, other 2 points inside it
+INTO qlayer
+FROM upstate
+
 --Distance :
-
-DROP TABLE qlayer;
---create convex hull around the geometries in those 6 cities in upstate New York
-SELECT st_ConvexHull(geometry) AS geometry
-INTO qlayer
-FROM upstate
-
---...That gave separate points. Instead we have to turn those geometries into a multi-part
-DROP TABLE qlayer;
-SELECT st_ConvexHull(geometry) AS geometry
-INTO qlayer
-FROM upstate
-
-
 
 
 
