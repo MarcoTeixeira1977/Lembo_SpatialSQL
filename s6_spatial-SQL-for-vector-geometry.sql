@@ -183,7 +183,30 @@ AND firm.zone = 'AE'                                        -- 320 rows
 
 
 
---# Spatial operations: Topological Overlay. (ERASE, INTERSECT, IDENTITY)
+--# Spatial operations: Topological Overlay. (ERASE, INTERSECT, IDENTITY.) [Using supplied 'overlay.qgs' file]
+--Erase :
+
+DROP TABLE qlayer;
+SELECT leftsquare.side, ST_difference(leftsquare.geometry,middle.geometry) AS geometry
+INTO qlayer
+FROM leftsquare, middle
+
+--Intersect :
+
+DROP TABLE qlayer;
+SELECT leftsquare.side AS l_side, rightsquare.side AS r_side,
+		ST_intersection(leftsquare.geometry,rightsquare.geometry) AS geometry
+INTO qlayer
+FROM leftsquare, rightsquare
+WHERE ST_intersects(leftsquare.geometry,rightsquare.geometry)  -- to run faster, not return NULLs
+
+--Identity. (This is a bit more complex ...Diagram in 'ArcGIS Help' [resources.arcgis.com]) :
+
+
+
+
+
+
 
 
 
