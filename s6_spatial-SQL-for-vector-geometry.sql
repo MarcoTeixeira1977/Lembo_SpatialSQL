@@ -183,7 +183,8 @@ AND firm.zone = 'AE'                                        -- 320 rows
 
 
 
---# Spatial operations: Topological Overlay. (ERASE, INTERSECT, IDENTITY.) [Using supplied 'overlay.qgs' file]
+--# Spatial operations: Topological Overlay. (Erase, Intersect, Identity, etc.)
+--	...[Using supplied 'overlay.qgs' file for the data]
 --Erase :
 
 DROP TABLE qlayer;
@@ -202,10 +203,29 @@ WHERE ST_intersects(leftsquare.geometry,rightsquare.geometry)  -- to run faster,
 
 --Identity. (This is a bit more complex ...Diagram in 'ArcGIS Help' [resources.arcgis.com]) :
 
+DROP TABLE qlayer;
+SELECT * INTO qlayer
+FROM
+		(SELECT leftsquare.side AS l_side, rightsquare.side AS r_side,
+				ST_intersection(leftsquare.geometry,rightsquare.geometry) AS geometry
+		FROM leftsquare, rightsquare
+		WHERE ST_intersects(leftsquare.geometry,rightsquare.geometry)
 
+		UNION ALL
 
+		SELECT leftsquare.side AS l_side, ' ' AS r_side,
+				ST_difference(leftsquare.geometry,rightsquare.geometry) AS geometry
+		FROM leftsquare, rightsquare
+		WHERE ST_intersects(leftsquare.geometry,rightsquare.geometry)
+		) AS T1
 
+--Symmetrical Difference :
 
+--ST_SymDifference() is a named function in PostGIS
+
+--Union :
+
+--cf. Identity. Combine an intersection and a difference ...and also a difference 'the other way'
 
 
 
