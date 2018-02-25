@@ -57,7 +57,7 @@ GROUP BY propclass
 
 SELECT sum(asmt)::numeric::money AS sumasmt, propclass
 FROM parcels, firm
-WHERE st_contains(firm.geometry, parcels.geometry) -- value of parcels inside the 'X' floodzone
+WHERE ST_contains(firm.geometry, parcels.geometry) -- value of parcels inside the 'X' floodzone
 AND firm.zone = 'X'
 GROUP BY propclass
 
@@ -65,7 +65,7 @@ GROUP BY propclass
 
 SELECT sum(asmt)::numeric::money AS sumasmt, propclass
 FROM parcels, firm
-WHERE st_contains(firm.geometry, parcels.geometry)
+WHERE ST_contains(firm.geometry, parcels.geometry)
 AND firm.zone = 'X'
 AND propclass > 200 AND propclass < 300
 GROUP BY propclass
@@ -75,7 +75,7 @@ ORDER BY propclass
 
 SELECT sum(asmt)::numeric::money AS sumasmt, propclass
 FROM parcels, firm
-WHERE st_contains(firm.geometry, parcels.geometry)
+WHERE ST_contains(firm.geometry, parcels.geometry)
 AND left(propclass::text,1) = '2'         -- With only one AND. But slow, to convert to text
 GROUP BY propclass
 ORDER BY propclass
@@ -97,8 +97,8 @@ ORDER BY value
 
 DROP TABLE qlayer;
 
-SELECT st_union(geometry) AS geometry, propclas.description  -- 'perform a merging of the data'
-INTO qlayer              -- st_union() is an aggregate function for geometries ...cf. sum(asmt)
+SELECT ST_union(geometry) AS geometry, propclas.description  -- 'perform a merging of the data'
+INTO qlayer              -- ST_union() is an aggregate function for geometries ...cf. sum(asmt)
 FROM parcels, propclas
 WHERE
 	left(parcels.propclass::text,1) = left(propclas.value,1)
@@ -196,44 +196,44 @@ SELECT '1995' AS yr, stddev(ob_1995)/avg(ob_1995) AS CV FROM states
 
 --
 
-SELECT	st_centroid(geometry),                            -- centroid for each state (49 rows)
-		st_centroid(geometry)
+SELECT	ST_centroid(geometry),                            -- centroid for each state (49 rows)
+		ST_centroid(geometry)
 FROM states
 
 --
 
-SELECT	st_x(st_centroid(geometry)),                      -- X coord for each state (49 rows)
-		st_y(st_centroid(geometry))
+SELECT	ST_x(ST_centroid(geometry)),                      -- X coord for each state (49 rows)
+		ST_y(ST_centroid(geometry))
 FROM states
 
 --
 
-SELECT	avg(st_x(st_centroid(geometry))) AS X,            -- average X of all states (1 row)
-		avg(st_y(st_centroid(geometry))) AS Y             -- ...and Y. The mean centre of USA
+SELECT	avg(ST_x(ST_centroid(geometry))) AS X,            -- average X of all states (1 row)
+		avg(ST_y(ST_centroid(geometry))) AS Y             -- ...and Y. The mean centre of USA
 FROM states
 
 --
 
 DROP TABLE qlayer;
 
-SELECT	st_point(avg(st_x(st_centroid(geometry))),        -- convert x,y into an actual point
-		avg(st_y(st_centroid(geometry)))) AS geometry     -- ...'Kansas North' coord system
+SELECT	st_point(avg(ST_x(ST_centroid(geometry))),        -- convert x,y into an actual point
+		avg(ST_y(ST_centroid(geometry)))) AS geometry     -- ...'Kansas North' coord system
 INTO qlayer
 FROM states                                               -- (Also show 'states' layer in QGIS)
 
 --
 -- Weighted Mean Centre ...weighted by obesity
 
-SELECT	sum(st_x(st_centroid(geometry)) * ob_2000)/sum(ob_2000) AS X,
-		sum(st_y(st_centroid(geometry)) * ob_2000)/sum(ob_2000) AS Y
+SELECT	sum(ST_x(ST_centroid(geometry)) * ob_2000)/sum(ob_2000) AS X,
+		sum(ST_y(ST_centroid(geometry)) * ob_2000)/sum(ob_2000) AS Y
 FROM states
 
 --
 
 DROP TABLE qlayer;
 
-SELECT	st_point(sum(st_x(st_centroid(geometry)) * ob_2000)/sum(ob_2000),
-		sum(st_y(st_centroid(geometry)) * ob_2000)/sum(ob_2000)) AS geometry
+SELECT	ST_point(sum(ST_x(ST_centroid(geometry)) * ob_2000)/sum(ob_2000),
+		sum(ST_y(ST_centroid(geometry)) * ob_2000)/sum(ob_2000)) AS geometry
 INTO qlayer
 FROM states
 
@@ -394,9 +394,9 @@ SELECT * FROM mytable                               -- 23 rows
 CREATE FUNCTION __aaa_getfloodgeom (x text)         -- expecting a text value passed-in (variable)
 RETURNS TABLE(mygeom geometry) AS                   -- return a geometry (that's in a table)
 $$
-	SELECT st_intersection(parcels.geometry,firm.geometry) AS geometry
+	SELECT ST_intersection(parcels.geometry,firm.geometry) AS geometry
 	FROM parcels,firm
-	WHERE st_intersects(parcels.geometry,firm.geometry) 
+	WHERE ST_intersects(parcels.geometry,firm.geometry) 
 	AND firm.zone = $1	;                           -- 'equal to 1st variable I passed-in' (x)
 $$ LANGUAGE SQL;
 

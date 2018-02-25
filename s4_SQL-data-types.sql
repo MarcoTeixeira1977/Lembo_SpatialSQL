@@ -103,7 +103,7 @@ WHERE propclass = 210
 SELECT concat('assessed value is', '   ', asmt::numeric::money::text), parcelkey
 FROM parcels, floodarea
 WHERE propclass = 210
-AND st_intersects(parcels.geometry, floodarea.geometry)
+AND ST_intersects(parcels.geometry, floodarea.geometry)
 
 --# Date & Time Operations
 
@@ -133,7 +133,7 @@ WHERE to_char(inv_date - '6/03/2001', 'DD')::numeric > 400  -- >400 days since i
 
 --
 
-SELECT extract(month from gps_date), site_id
+SELECT extract(month FROM gps_date), site_id
 FROM trees
 
 --
@@ -149,23 +149,23 @@ DROP TABLE qlayer;
 SELECT parcels.*
 INTO qlayer
 FROM parcels, parks
-WHERE st_intersects(parcels.geometry, parks.geometry)   -- a spatial transform (an intersect tf)
+WHERE ST_intersects(parcels.geometry, parks.geometry)   -- a spatial transform (an intersect tf)
 
 --
 
 SELECT parcels.parcelkey, parks.name
 FROM parcels, parks
-WHERE st_intersects(parcels.geometry, parks.geometry)
+WHERE ST_intersects(parcels.geometry, parks.geometry)
 
 --
 
 DROP TABLE qlayer;
 
-SELECT st_intersection(parcels.geometry, firm.geometry) AS geometry   -- intersectION
+SELECT ST_intersection(parcels.geometry, firm.geometry) AS geometry   -- intersectION
 INTO qlayer
 FROM parcels, firm
 WHERE firm.zone = 'X500'
-AND st_intersects(parcels.geometry, firm.geometry)                    -- intersectS
+AND ST_intersects(parcels.geometry, firm.geometry)                    -- intersectS
 
     -- intersectS() is a True/False. intersectION() returns geometry of shared portion
     -- ...which will be jagged fractions of parcels, not neatly along borders!
