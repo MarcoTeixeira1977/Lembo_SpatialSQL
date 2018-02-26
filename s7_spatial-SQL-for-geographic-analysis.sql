@@ -108,7 +108,7 @@ ORDER BY aname, dist ASC                                      -- 30 rows
 
 --
 
-SELECT aname, min(dist)                                       -- will need to group the aggregate
+SELECT aname, min(dist) AS mindist                            -- will need to group the aggregate
 FROM
 		(SELECT a.geometry, ST_distance(a.geometry,b.geometry,true)*0.00062 AS dist,
 				a.name AS aname, b.name AS bname
@@ -121,17 +121,18 @@ GROUP BY aname                                                -- 6 rows (groupin
 
 --
 
-
-
-(SELECT aname, min(dist)
+SELECT avg(mindist) AS avgNND                                 -- avg Nearest Neighbor Distance
 FROM
-		(SELECT a.geometry, ST_distance(a.geometry,b.geometry,true)*0.00062 AS dist,
-				a.name AS aname, b.name AS bname
-		FROM upstate AS a, upstate AS b
-		WHERE a.name <> b.name
-		ORDER BY aname, dist ASC
-		) AS T1
-GROUP BY aname) AS A2
+		(SELECT aname, min(dist) AS mindist
+		FROM
+				(SELECT a.geometry, ST_distance(a.geometry,b.geometry,true)*0.00062 AS dist,
+						a.name AS aname, b.name AS bname
+				FROM upstate AS a, upstate AS b
+				WHERE a.name <> b.name
+				ORDER BY aname, dist ASC
+				) AS T1
+		GROUP BY aname
+		) AS A2                                               -- 1 row
 
 
 
