@@ -132,9 +132,23 @@ FROM
 				ORDER BY aname, dist ASC
 				) AS T1
 		GROUP BY aname
-		) AS A2                                               -- 1 row
+		) AS A2                                               -- 1 row : 32.7 miles
 
+--
 
+--with 'parks' instead
+SELECT avg(mindist) AS avgNND                                 -- avg Nearest Neighbor Distance
+FROM
+		(SELECT aname, min(dist) AS mindist
+		FROM
+				(SELECT a.geometry, ST_distance(a.geometry,b.geometry)*0.00062 AS dist, -- no true
+						a.name AS aname, b.name AS bname
+				FROM parks AS a, parks AS b                                             -- parks
+				WHERE a.name <> b.name
+				ORDER BY aname, dist ASC
+				) AS T1
+		GROUP BY aname
+		) AS A2                                               -- 1 row : 0.6 miles
 
 
 
