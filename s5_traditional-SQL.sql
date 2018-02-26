@@ -285,21 +285,21 @@ SELECT name FROM
 		(                                           -- start virtual table T1 (30 rows; duplicn)
 			(SELECT name, ob_2009 AS ob
 			FROM states
-			ORDER BY ob_2009 DESC                   -- **** ORDER BY 'ob' ?
+			ORDER BY ob_2009 DESC                   -- ('ORDER BY ob' also works)
 			LIMIT 10)                               -- Top10 states in 2009
 			
 			UNION ALL
 			
 			(SELECT name, ob_1995 AS ob
 			FROM states
-			ORDER BY ob_1995 DESC                   -- **** ORDER BY 'ob' ?
+			ORDER BY ob_1995 DESC                   -- ('ORDER BY ob' also works)
 			LIMIT 10)                               -- Top10 states in 1995
 			
 			UNION ALL
 			
 			(SELECT name, ob_2000 AS ob
 			FROM states
-			ORDER BY ob_2000 DESC                   -- **** ORDER BY 'ob' ?
+			ORDER BY ob_2000 DESC                   -- ('ORDER BY ob' also works)
 			LIMIT 10)                               -- Top10 states in 2000
 		) AS T1                                     -- end virtual table T1 (30 rows; duplicn)
 	GROUP BY name

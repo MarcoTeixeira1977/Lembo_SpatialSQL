@@ -97,32 +97,37 @@ CROSSTAB
 
 --# geographic analysis : Nearest Neighbor Index
 
---"...it looks at the distance from each point to its nearest neighbour, and then
---it takes the average..." [average of the 6 distances]"
+--"looks at the distance from each point to its nearest neighbour, and then it takes the average"
+--...[average of the 6 minimum distances, to give Index for the group of 6 cities]
+--...[average distance that each point has to its nearest neighbour]
 SELECT a.geometry, ST_distance(a.geometry,b.geometry,true)*0.00062 AS dist,
 		a.name AS aname, b.name AS bname
-FROM upstate AS a, upstate AS b
+FROM upstate AS a, upstate AS b                               -- 'trick'
 WHERE a.name <> b.name
 ORDER BY aname, dist ASC                                      -- 30 rows
---Distance from every city to every other city (in ascending order). Not what we want
+--Distance from every city to every other city (grouped in ascending order). Not what we want
+--...As a next step, we want the shortest distance (which is first row in each group)
 
 --
 
 SELECT aname, min(dist) AS mindist                            -- will need to group the aggregate
 FROM
+--COPIED
 		(SELECT a.geometry, ST_distance(a.geometry,b.geometry,true)*0.00062 AS dist,
 				a.name AS aname, b.name AS bname
 		FROM upstate AS a, upstate AS b
 		WHERE a.name <> b.name
 		ORDER BY aname, dist ASC
 		) AS T1
+--/COPIED
 GROUP BY aname                                                -- 6 rows (grouping the aggregate)
---For every city : minimum distance to its nearest neighbour. Still not what we want
+--For every city : minimum distance to its nearest neighbour. "Still not totally what we want"
 
 --
 
-SELECT avg(mindist) AS avgNND                                 -- avg Nearest Neighbor Distance
+SELECT avg(mindist) AS avgNNI                           -- avg Nearest Neighbor Index (a distance)
 FROM
+--COPIED
 		(SELECT aname, min(dist) AS mindist
 		FROM
 				(SELECT a.geometry, ST_distance(a.geometry,b.geometry,true)*0.00062 AS dist,
@@ -132,12 +137,13 @@ FROM
 				ORDER BY aname, dist ASC
 				) AS T1
 		GROUP BY aname
-		) AS A2                                               -- 1 row : 32.7 miles
+		) AS T2                                               -- 1 row : 32.7 miles
+--/COPIED
 
 --
 
---with 'parks' instead
-SELECT avg(mindist) AS avgNND                                 -- avg Nearest Neighbor Distance
+--with 'parks' layer (which also has 'name' column, but isn't in lat/lon), we can do the same...
+SELECT avg(mindist) AS avgNNI
 FROM
 		(SELECT aname, min(dist) AS mindist
 		FROM
@@ -148,8 +154,8 @@ FROM
 				ORDER BY aname, dist ASC
 				) AS T1
 		GROUP BY aname
-		) AS A2                                               -- 1 row : 0.6 miles
-
+		) AS T2                                               -- 1 row : 0.58 miles
+--I think 'parks' is in feet, so conversion factor should be 0.00018939393, then NNI = 0.18 miles
 
 
 
