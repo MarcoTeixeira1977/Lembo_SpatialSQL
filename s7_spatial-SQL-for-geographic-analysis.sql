@@ -79,7 +79,7 @@ CROSSTAB
 
 --'We can adapt the SQL to create an _interaction_ or _weights_ matrix, W.
 --eg. An inverse distance weight (1/d) ...using a single character change from previous query'
---A 'larger' value (eg. 0.02) means more interaction (ie. those 2 cities closer than others)
+--A 'larger' value (eg. 0.05) means more interaction (ie. those 2 cities closer than others)
 SELECT * FROM
 CROSSTAB
 		('SELECT a.name::text, b.name::text, CASE             -- need CASE, in case distance is 0
@@ -95,8 +95,47 @@ CROSSTAB
 
 
 
-
-
 --# geographic analysis : Nearest Neighbor Index
+
+--"...it looks at the distance from each point to its nearest neighbour, and then
+--it takes the average..." [average of the 6 distances]"
+SELECT a.geometry, ST_distance(a.geometry,b.geometry,true)*0.00062 AS dist,
+		a.name AS aname, b.name AS bname
+FROM upstate AS a, upstate AS b
+WHERE a.name <> b.name
+ORDER BY aname, dist ASC                                      -- 30 rows
+--Distance from every city to every other city (in ascending order). Not what we want
+
+--
+
+SELECT aname, min(dist)                                       -- will need to group the aggregate
+FROM
+		(SELECT a.geometry, ST_distance(a.geometry,b.geometry,true)*0.00062 AS dist,
+				a.name AS aname, b.name AS bname
+		FROM upstate AS a, upstate AS b
+		WHERE a.name <> b.name
+		ORDER BY aname, dist ASC
+		) AS T1
+GROUP BY aname                                                -- 6 rows (grouping the aggregate)
+--For every city : minimum distance to its nearest neighbour. Still not what we want
+
+--
+
+
+
+(SELECT aname, min(dist)
+FROM
+		(SELECT a.geometry, ST_distance(a.geometry,b.geometry,true)*0.00062 AS dist,
+				a.name AS aname, b.name AS bname
+		FROM upstate AS a, upstate AS b
+		WHERE a.name <> b.name
+		ORDER BY aname, dist ASC
+		) AS T1
+GROUP BY aname) AS A2
+
+
+
+
+
 
 
