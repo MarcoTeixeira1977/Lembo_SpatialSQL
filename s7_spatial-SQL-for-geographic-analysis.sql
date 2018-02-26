@@ -38,6 +38,8 @@ CROSSTAB
 		CT(row_name text, Auburn text, Binghamton text, Elmira text,
 			Ithaca text, Rochester text, Syracuse text);               -- 6x6 matrix (distance)
 
+
+
 --Adjacency :
 
 --"An adjacency matrix is similar to the distance matrix except the matrix elements are 1's or 0's"
@@ -66,10 +68,32 @@ CROSSTAB
 		FROM states AS a, states AS b
 		WHERE a.name IN (''Alabama'',''California'',''Nevada'',''Oregon'',''Mississippi'')
 		AND   b.name IN (''Alabama'',''California'',''Nevada'',''Oregon'',''Mississippi'')
-		ORDER BY 1'
-		) AS                                                           -- why '1,2' not '1' ?
+		ORDER BY 1,2'                                                  -- why '1,2' not '1' ?
+		) AS
 		CT(row_name text, Alabama text, California text, Mississippi text,
 			Nevada text, Oregon text);                                 -- alphabetic (re. ORDER BY)
+
+
+
+--Interaction :
+
+--'We can adapt the SQL to create an _interaction_ or _weights_ matrix, W.
+--eg. An inverse distance weight (1/d) ...using a single character change from previous query'
+--A 'larger' value (eg. 0.02) means more interaction (ie. those 2 cities closer than others)
+SELECT * FROM
+CROSSTAB
+		('SELECT a.name::text, b.name::text, CASE             -- need CASE, in case distance is 0
+				WHEN
+					ST_distance(a.geometry,b.geometry,true)*0.00062 = 0 THEN 0::text
+				ELSE (1/(ST_distance(a.geometry,b.geometry,true)*0.00062))::text  -- or (1/d^2) etc
+				END AS dist
+		FROM upstate AS a, upstate AS b
+		ORDER BY 1,2'
+		) AS
+		CT(row_name text, Auburn text, Binghamton text, Elmira text,
+			Ithaca text, Rochester text, Syracuse text);
+
+
 
 
 
