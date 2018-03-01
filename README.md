@@ -5,7 +5,7 @@ _"This course is designed to teach you how to write SQL to replicate many databa
 
 _"Develop SQL queries that perform advanced GIS tasks, some of which might be impossible to perform in the GUI."_
 
-_"This is a very comprehensive course that should take multiple days to complete"_
+_"This is a very comprehensive course that should take multiple days to complete."_
 
 
 
@@ -19,10 +19,10 @@ _"This is a very comprehensive course that should take multiple days to complete
 * Lecture 07 : Part II: Date & Time, Spatial
 
 ### Section 5 : Traditional SQL
-* Lecture 08 : SELECT, WHERE, conditional expressions, and GROUP BY
+* Lecture 08 : SELECT, WHERE, conditional expressions, GROUP BY
 * Lecture 09 : More fun with GROUP BY
 * Lecture 10 : CASE statements
-* Lecture 11 : Aggregate functions (average, standard deviation, count, min, max...)
+* Lecture 11 : Aggregate functions (average, std deviation, count, min, max)
 * Lecture 12 : Other SQL commands (Order, LIMIT, OFFSET, BETWEEN)
 * Lecture 13 : Changing data (DROP, CREATE, INSERT, ALTER, UPDATE)
 * Lecture 14 : Writing SQL functions
